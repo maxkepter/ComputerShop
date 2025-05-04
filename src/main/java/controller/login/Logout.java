@@ -14,14 +14,14 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Servlet implementation class LogoutServlet
  */
-@WebServlet("/LogoutServlet")
-public class LogoutServlet extends HttpServlet {
+@WebServlet("/Logout")
+public class Logout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public LogoutServlet() {
+	public Logout() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

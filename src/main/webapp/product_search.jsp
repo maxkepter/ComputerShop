@@ -162,13 +162,16 @@ List<Product> productList = (List<Product>) request.getAttribute("productList");
  %>
 						</a>
 						<form action="AddToCart" method="post" style="display: inline;">
-					<input type="hidden" name="productId" value="<%=product.getProductID()%>" />
-					<button type="submit">Add to Cart</button>
-				</form>
-				<form action="BuyProduct" method="post" style="display: inline;">
-					<input type="hidden" name="productId" value="<%=product.getProductID()%>" />
-					<button type="submit">Buy Now</button>
-				</form>
+							<input type="hidden" name="productId"
+								value="<%=product.getProductID()%>" />
+							<button type="submit" class="requires-login">Add to Cart</button>
+						</form>
+						<form action="BuyProduct" method="post" style="display: inline;">
+							<input type="hidden" name="productId"
+								value="<%=product.getProductID()%>" />
+							<button type="submit" class="requires-login">Buy Now</button>
+						</form>
+
 					</div>
 					<%
 					}
@@ -223,6 +226,27 @@ List<Product> productList = (List<Product>) request.getAttribute("productList");
 				<p>Contact:
 			</div>
 		</div>
+
+
+		<script>
+    const isLogged = <%=(isLogged != null && isLogged) ? "true" : "false"%>;
+
+    function handleActionClick(e) {
+        if (!isLogged) {
+            e.preventDefault();
+            alert("You have to login to do this action.");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const protectedButtons = document.querySelectorAll(".requires-login");
+        protectedButtons.forEach(btn => {
+            btn.addEventListener("click", handleActionClick);
+        });
+    });
+</script>
+
 	</f:view>
+
 </body>
 </html>

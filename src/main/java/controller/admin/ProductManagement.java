@@ -38,7 +38,7 @@ public class ProductManagement extends HttpServlet {
 		String numPageString = request.getParameter("numPage");
 		int numPage = 0;
 		if (numPageString == null || !Validate.checkInt(numPageString)) {
-			numPage = 0;
+			numPage = 0;	
 		} else {
 			numPage = Integer.parseInt(numPageString);
 		}

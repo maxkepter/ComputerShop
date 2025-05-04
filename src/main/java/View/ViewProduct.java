@@ -1,13 +1,19 @@
 package View;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
+import Model.Order;
 import Model.Product;
 import Model.Rating;
 import dao.BrandDao;
+import dao.CartDao;
+import dao.OrderDao;
 import dao.ProductDao;
 import dao.RatingDao;
 import jakarta.servlet.ServletException;
@@ -66,7 +72,6 @@ public class ViewProduct extends HttpServlet {
 	        // Lấy tên thương hiệu
 	        String brand = brandDao.getBrandById(product.getBrandID());
 
-
 	        // Đặt các thuộc tính cần thiết vào request
 	        request.setAttribute("product", product);
 	        request.setAttribute("ratingList", ratingList);
@@ -74,6 +79,7 @@ public class ViewProduct extends HttpServlet {
 
 	        // Forward request đến view
 	        request.getRequestDispatcher("view_product.jsp").forward(request, response);
+	        
 	    } else {
 	        // Nếu productId không hợp lệ, trả về lỗi hoặc redirect
 	        ResponseUtils.evict(response);
@@ -88,29 +94,47 @@ public class ViewProduct extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		int userId = Integer.parseInt(request.getParameter("userId"));
+		int productId = Integer.parseInt(request.getParameter("productId"));
+		RatingDao ratingDao=null;
+		OrderDao orderDao=null;
 		String command = request.getParameter("command");
 		switch (command) {
 		case "addRating":
-			int userId = Integer.parseInt(request.getParameter("userId"));
-			int productId = Integer.parseInt(request.getParameter("productId"));
 			double rate = Double.parseDouble(request.getParameter("rating"));
 			String comment = request.getParameter("comment");
 
-			RatingDao ratingDao = new RatingDao(DataSourceProvider.getDataSource());
+			ratingDao = new RatingDao(DataSourceProvider.getDataSource());
 			ratingDao.createRating(userId, productId, rate, comment);
 
 			// Sau khi thêm đánh giá xong, redirect lại trang ViewProduct để hiển thị lại
 			// sản phẩm với đánh giá mới
 			response.sendRedirect("ViewProduct?productId=" + productId);
 			break;
-		case "buy":
+		case "deleteRating":
+			ratingDao=new RatingDao(DataSourceProvider.getDataSource());			
+			ratingDao.deleteRating(userId, productId);  			
 			break;
-
+		case "buyProduct":
+			orderDao =new OrderDao(DataSourceProvider.getDataSource());
+			String quantity=request.getParameter("quantity");
+			List<Map<Integer, Integer>> productList=new ArrayList<Map<Integer,Integer>>();
+				
+			if(Validate.checkInt(quantity)) {
+				Map<Integer, Integer> productinfo=new HashMap<Integer, Integer>();
+				productinfo.put(productId, Integer.parseInt(quantity));
+				productList.add(productinfo);
+				orderDao.createOrder(userId, productList);
+			}			
+			break;
 		case "cart":
+			CartDao cartDao=new CartDao(DataSourceProvider.getDataSource());
+			cartDao.addToCart(userId, productId);			
 			break;
 		default:
 			break;
 		}
+		response.sendRedirect("ViewProduct?productId=" + productId);
 	}
 
 }

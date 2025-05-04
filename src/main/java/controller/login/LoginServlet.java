@@ -56,6 +56,7 @@ public class LoginServlet extends HttpServlet {
 			HttpSession session = request.getSession();
 			session.setAttribute("isLogged", true);// user is logged
 			session.setAttribute("user", user);
+			session.setMaxInactiveInterval(60*60);//second
 			response.sendRedirect("Home");
 			break;
 		case 1:// wrong password66

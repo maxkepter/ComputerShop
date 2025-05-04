@@ -48,10 +48,20 @@ public class Product {
 		this.specProducts = specProducts;
 		this.imageProduct = imageProduct;
 	}
+	// constructor này dùng để lấy thông tin cho giỏ hàng
+	public Product(int productID, String productName, int productQuantity, double price) {
+		super();
+		this.productID = productID;
+		this.productName = productName;
+		this.productQuantity = productQuantity;
+		this.price = price;
+	}
+	
+	
 
 	public int getProductID() {
 		return productID;
-	}
+	}	
 
 	public String getProductName() {
 		return productName;

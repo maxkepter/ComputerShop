@@ -1,0 +1,279 @@
+@charset "UTF-8";
+
+h2 {
+	justify-self: center;
+}
+
+body {
+	background-color: #b3c0e2;
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+/* ===product detail=== */
+.product-image {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 20px;
+	gap: 20px;
+}
+
+.main-image {
+	width: 400px;
+	height: 400px;
+	border: 1px solid #ccc;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #f9f9f9;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.main-image img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.image-item {
+	background-color: #f9f9f9;
+	border-radius: 10px;
+}
+
+.image-item img {
+	max-width: 100px;
+	max-height: 100px;
+}
+
+.product-detail {
+	background: #bac8c9;
+	display: flex;
+	align-items: center;
+	margin: 20px;
+	border-radius: 20px;
+}
+
+.product-detail h1 {
+	font-size: 24px;
+	margin-bottom: 10px;
+}
+/* product-info */
+.product-detail-info {
+	margin-left: 50px;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	justify-content: space-around;
+}
+
+.product-info {
+	display: flex;
+	justify-content: space-between;
+	padding: 50px;
+}
+
+.product-specification, .product-description {
+	justify-items: center;
+}
+
+.description {
+	margin-left: 30px;
+	border: 2px solid #ccc;
+	background-color: #f9f9f9;
+	padding: 20px 20px;
+}
+
+.specifications-detail {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	margin-left: 30px;
+	border: 2px solid #ccc;
+	background-color: #f9f9f9;
+	padding: 0px 20px;
+}
+
+.specifications-detail .specproduct-info {
+	display: flex;
+	gap: 10px;
+	padding: 10px 0;
+}
+
+.specproduct-info p {
+	align-self: center;
+}
+/* ===rating=== */
+.rating-form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 20px;
+}
+
+.rating-form form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: #f9f9f9;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	gap: 10px;
+	width: 90%;
+}
+
+.rating-form label {
+	margin-right: 10px;
+}
+
+.rating-form input[type="radio"] {
+	margin-right: 5px;
+}
+
+.rating-form input[type="submit"] {
+	margin-left: 10px;
+	padding: 5px 10px;
+	background-color: #4caf50;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.rating-form input[type="submit"]:hover {
+	background-color: #45a049;
+}
+
+.rating-form .error-message {
+	color: red;
+	margin-left: 10px;
+}
+
+.rating-form textarea {
+	width: 70%;
+	height: 100px;
+	margin-left: 10px;
+	padding: 5px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+
+.rating-form textarea:focus {
+	border-color: #4caf50;
+	outline: none;
+}
+/* ===rating list=== */
+.rating-list {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 10px;
+	margin-top: 20px;
+	background-color: #f9f9f9;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rating-list h3 {
+	margin-bottom: 10px;
+}
+
+/* Nền tối phía sau popup */
+.model-overlay {
+	display: none;
+	position: fixed;
+	z-index: 999;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Nội dung popup */
+.modal-content {
+	background-color: #fff;
+	margin: 10% auto;
+	padding: 20px;
+	width: 300px;
+	border-radius: 10px;
+	position: relative;
+}
+
+.modal-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.modal-body h2 {
+	margin-bottom: 20px;
+}
+
+.modal-content form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.user-rating {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 10px;
+	padding: 10px;
+	background-color: #f9f9f9;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	align-items: center;
+}
+
+.rating-item {
+	display: flex;
+	width: 100%;
+	background-color: #8f8888;
+	padding: 10px;
+	border-radius: 5px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	margin-bottom: 10px;
+}
+
+.user-info {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 10px;
+}
+
+.user-info img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	margin-right: 10px;
+}
+
+.rating-info {
+	align-content: center;
+}
+
+.delete-btn {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	background: red;
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 4px 8px;
+	margin: 10px
+}

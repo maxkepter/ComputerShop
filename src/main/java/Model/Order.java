@@ -1,18 +1,22 @@
 package Model;
 
-import java.util.Date;
+import java.sql.Date;
+import java.util.List;
 
 public class Order {
 	private int orderID;
 	private Date orderDate;
 	private int status;
 	private int userID;
+	private List<OrderDetail> orderDetails;	
 
-	public Order(int orderID, Date orderDate, int status, int userID) {
+	public Order(int orderID, Date orderDate, int status, int userID, List<OrderDetail> orderDetails) {
+		super();
 		this.orderID = orderID;
 		this.orderDate = orderDate;
 		this.status = status;
 		this.userID = userID;
+		this.orderDetails = orderDetails;
 	}
 
 	public int getOrderID() {
@@ -45,5 +49,13 @@ public class Order {
 
 	public void setUserID(int userID) {
 		this.userID = userID;
+	}
+
+	public List<OrderDetail> getOrderDetails() {
+		return orderDetails;
+	}
+
+	public void setOrderDetails(List<OrderDetail> orderDetails) {
+		this.orderDetails = orderDetails;
 	}
 }

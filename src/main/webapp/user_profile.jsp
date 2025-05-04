@@ -15,8 +15,8 @@ Boolean isLogged = (Boolean) session.getAttribute("isLogged");
 User user = (User) session.getAttribute("user");
 %>
 <link rel="stylesheet" href="./css/navbar.css">
-<link rel="stylesheet" href="./css/user_profile.css">
-	<link rel="stylesheet" href="./css/footer.css">
+	<link rel="stylesheet" href="./css/user_profile.css">
+		<link rel="stylesheet" href="./css/footer.css">
 </head>
 <body>
 	<f:view>
@@ -65,15 +65,18 @@ User user = (User) session.getAttribute("user");
 					href="">Change Password</a> <a href="Logout">Logout</a>
 			</div>
 			<div class="content">
-				<div class="view-profile"><h1>User Profile</h1>
+				<div class="view-profile">
+					<h1>User Profile</h1>
 					<p>
 						<strong>Username:</strong>
 						<%=user.getUserName()%></p>
-						<p><strong>First name:</strong>
-						<%=user.getFirstName() %>
-						</p>
-						<p><strong>Last name:</strong><%=user.getLastName()%>
-						</p>
+					<p>
+						<strong>First name:</strong>
+						<%=user.getFirstName()%>
+					</p>
+					<p>
+						<strong>Last name:</strong><%=user.getLastName()%>
+					</p>
 					<p>
 						<strong>Email:</strong>
 						<%=user.getEmail()%></p>
@@ -82,38 +85,39 @@ User user = (User) session.getAttribute("user");
 						<%=user.getPhoneNumber()%></p>
 					<p>
 						<strong>Address:</strong>
-						<%=user.getAddress()%></p></div>
-				
-			<div class="update-profile">
-				<h1>Update Profile</h1>
+						<%=user.getAddress()%></p>
+				</div>
+
+				<div class="update-profile">
+					<h1>Update Profile</h1>
 					<form action="UpdateProfile" method="post">
 						<div class="form-group">
-							<label for="firstName">First Name:</label>
-							<input type="text" id="firstName" name="firstName" value="<%=user.getFirstName()%>" />
+							<label for="firstName">First Name:</label> <input type="text"
+								id="firstName" name="firstName" value="<%=user.getFirstName()%>" />
 						</div>
 						<div class="form-group">
-							<label for="lastName">Last Name:</label>
-							<input type="text" id="lastName" name="lastName" value="<%=user.getLastName()%>" />
+							<label for="lastName">Last Name:</label> <input type="text"
+								id="lastName" name="lastName" value="<%=user.getLastName()%>" />
 						</div>
 						<div class="form-group">
-							<label for="email">Email:</label>
-							<input type="text" id="email" name="email" value="<%=user.getEmail()%>" />
+							<label for="email">Email:</label> <input type="text" id="email"
+								name="email" value="<%=user.getEmail()%>" />
 						</div>
 						<div class="form-group">
-							<label for="phone">Phone:</label>
-							<input type="text" id="phone" name="phone" value="<%=user.getPhoneNumber()%>" />
+							<label for="phone">Phone:</label> <input type="text" id="phone"
+								name="phone" value="<%=user.getPhoneNumber()%>" />
 						</div>
 						<div class="form-group">
-							<label for="address">Address:</label>
-							<input type="text" id="address" name="address" value="<%=user.getAddress()%>" />
+							<label for="address">Address:</label> <input type="text"
+								id="address" name="address" value="<%=user.getAddress()%>" />
 						</div>
 						<button type="submit">Update</button>
 					</form>
 				</div>
 			</div>
-			</div>
-			</div>
-		
+		</div>
+		</div>
+
 		<div class="footer">
 			<div class="footer-content">
 				<p>&copy; 2023 Your Company. All rights reserved.</p>

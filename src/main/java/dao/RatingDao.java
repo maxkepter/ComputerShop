@@ -96,5 +96,35 @@ public class RatingDao {
 			DataSourceProvider.close(connection, preparedStatement, null);
 		}
 	}
+	
+	public void deleteRating(int userId, int productId) {
+	    String sql = "DELETE FROM Rating WHERE UserID = ? AND ProductID = ?";
+	    Connection connection = null;
+	    PreparedStatement preparedStatement = null;
+
+	    try {
+	        connection = dataSource.getConnection();
+	        preparedStatement = connection.prepareStatement(sql);
+	        preparedStatement.setInt(1, userId);
+	        preparedStatement.setInt(2, productId);
+	        preparedStatement.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace(); 
+	    } finally {
+	        DataSourceProvider.close(connection, preparedStatement, null);
+	    }
+	}
+	
+	public static Rating getRatingByUserId(List<Rating> ratingList,int userId) {
+		Rating rating=null;
+		for (int i=0;i<ratingList.size();i++) {
+			if(ratingList.get(i).getUserId()==userId) {
+				rating=ratingList.get(i);
+				ratingList.remove(i);
+			}
+		}
+		return rating;
+	}
+
 
 }
