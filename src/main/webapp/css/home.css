@@ -1,0 +1,44 @@
+@charset "UTF-8";
+.header-content img {
+	max-width: 85%;
+	height: auto;
+	margin-top: 20px;
+}
+
+#sidebar {
+	background-color: #ecf0f1;
+	padding: 15px;
+	margin-top: 20px;
+	width: 250px;
+}
+
+.main-content {
+	flex: 1;
+	padding: 20px;
+	background-color: #ecf0f1;
+	margin-top: 20px;
+}
+
+.main-content h2 {
+	justify-self: center;
+}
+
+.menu-item {
+	padding: 10px 5px;
+	margin: 5px 0;
+	background-color: #bdc3c7;
+	border-radius: 4px;
+}
+
+.menu-item a {
+	color: #2c3e50;
+	font-weight: bold;
+}
+
+.menu-item:hover {
+	background-color: #95a5a6;
+}
+
+.menu-item a:hover {
+	text-decoration: none;
+}

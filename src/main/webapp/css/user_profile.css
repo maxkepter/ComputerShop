@@ -1,0 +1,84 @@
+@charset "UTF-8";
+
+.main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: hwb(225 75% 19%);
+  border-radius: 5px;
+  margin: 10px;
+  margin-top: 0px;
+  width: 15%;
+}
+.sidebar a {
+  text-decoration: none; /* Xóa gạch chân */
+  color: inherit; /* Giữ màu chữ gốc */
+  display: block; /* Cho toàn bộ thẻ a bao hết nội dung */
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+.sidebar a:hover {
+  background-color: #007bff; /* Đổi màu nền khi hover */
+  color: white; /* Đổi màu chữ khi hover */
+}
+.sidebar a.active {
+  background-color: #007bff; /* Màu nền cho liên kết đang hoạt động */
+  color: white; /* Màu chữ cho liên kết đang hoạt động */
+}
+
+.content {
+  flex: 1;
+  margin-right: 20px;
+  padding: 10px;
+  background-color: hwb(225 75% 19%);
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.content h1 {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.content p {
+  margin: 5px 0;
+  align-self: center;
+  margin-right: 10px;
+}
+
+.update-profile button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  justify-self: center;
+  margin-top: 20px;
+}
+
+.form-group {
+  display: flex;
+  margin-bottom: 15px;
+}
+.form-group label {
+  width: 15%;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.form-group input[type="text"] {
+  width: 60%;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
