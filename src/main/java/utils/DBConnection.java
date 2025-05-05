@@ -39,17 +39,18 @@ public class DBConnection extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String message = "";
-		UserDao userDao = new UserDao(dataSource);
 		List<User> list = null;
 		try {
 			Connection connection = dataSource.getConnection();
 			if (connection != null) {
+				UserDao userDao = new UserDao(connection);
+
+				list = userDao.getUserList();
 				connection.close();
 				message = "Ket noi thanh cong den co so du lieu!";
 			} else {
 				message = "Khong the ket noi den co so du lieu.";
 			}
-			list = userDao.getUserList();
 
 		} catch (SQLException e) {
 			message = "Loi khi ket noi: " + e.getMessage();
@@ -58,7 +59,5 @@ public class DBConnection extends HttpServlet {
 		request.setAttribute("message", message);
 		request.getRequestDispatcher("testConnection.jsp").forward(request, response);
 	}
-
-	
 
 }

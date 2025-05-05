@@ -1,9 +1,9 @@
 package controller.admin;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import Model.Specification;
 import dao.SpecificationDao;
@@ -36,20 +36,23 @@ public class SpecificationManagment extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		DataSource dataSource = DataSourceProvider.getDataSource();
-		SpecificationDao specificationDao = new SpecificationDao(dataSource);
-		String num = request.getParameter("numPage");
-		int maxNumPage = specificationDao.countSpec() / 100;
-		if (num == null) {
-			num = "0";
-		}
-		int numPage = Integer.parseInt(num);
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			SpecificationDao specificationDao = new SpecificationDao(connection);
+			String num = request.getParameter("numPage");
+			int maxNumPage = specificationDao.countSpec() / 100;
+			if (num == null) {
+				num = "0";
+			}
+			int numPage = Integer.parseInt(num);
 
-		List<Specification> sepcList = specificationDao.getListSpecification(numPage);
-		request.setAttribute("specList", sepcList);
-		request.setAttribute("maxNumPage", maxNumPage);
-		request.setAttribute("numPage", numPage);
-		request.getRequestDispatcher("/admin/specifications_managment.jsp").forward(request, response);
+			List<Specification> sepcList = specificationDao.getListSpecification(numPage);
+			request.setAttribute("specList", sepcList);
+			request.setAttribute("maxNumPage", maxNumPage);
+			request.setAttribute("numPage", numPage);
+			request.getRequestDispatcher("/admin/specifications_managment.jsp").forward(request, response);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -60,36 +63,41 @@ public class SpecificationManagment extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String command = request.getParameter("command");
-		SpecificationDao specificationDao = new SpecificationDao(DataSourceProvider.getDataSource());
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			String command = request.getParameter("command");
+			SpecificationDao specificationDao = new SpecificationDao(connection);
 
-		if (command != null) {
-			switch (command) {
-			case "create":
-				String specName = request.getParameter("specName");
-				if (specName != null) {
-					specificationDao.createSpec(specName);
+			if (command != null) {
+				switch (command) {
+				case "create":
+					String specName = request.getParameter("specName");
+					if (specName != null) {
+						specificationDao.createSpec(specName);
+					}
+					break;
+				case "delete":
+					if (request.getParameter("specId") != null) {
+						int specId = Integer.parseInt(request.getParameter("specId"));
+						specificationDao.deleteSpec(specId);
+					}
+					break;
+				case "update":
+					String specNameUpdate = request.getParameter("specName");
+					String specIdUpdate = request.getParameter("specId");
+					if (specIdUpdate != null && specNameUpdate != null) {
+						specificationDao.updateSpec(Integer.parseInt(specIdUpdate), specNameUpdate);
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			case "delete":
-				if (request.getParameter("specId") != null) {
-					int specId = Integer.parseInt(request.getParameter("specId"));
-					specificationDao.deleteSpec(specId);
-				}
-				break;
-			case "update":
-				String specNameUpdate = request.getParameter("specName");
-				String specIdUpdate = request.getParameter("specId");
-				if (specIdUpdate != null && specNameUpdate != null) {
-					specificationDao.updateSpec(Integer.parseInt(specIdUpdate), specNameUpdate);
-				}
-				break;
-			default:
-				break;
+
 			}
-
+			response.sendRedirect("SpecificationManagment");
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
-		response.sendRedirect("SpecificationManagment");
 
 	}
 

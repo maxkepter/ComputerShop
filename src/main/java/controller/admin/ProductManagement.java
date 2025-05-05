@@ -1,6 +1,8 @@
 package controller.admin;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import Model.Product;
@@ -38,19 +40,23 @@ public class ProductManagement extends HttpServlet {
 		String numPageString = request.getParameter("numPage");
 		int numPage = 0;
 		if (numPageString == null || !Validate.checkInt(numPageString)) {
-			numPage = 0;	
+			numPage = 0;
 		} else {
 			numPage = Integer.parseInt(numPageString);
 		}
-		ProductDao productDao = new ProductDao(DataSourceProvider.getDataSource());
-		int maxPage = productDao.countProduct() / 36;// 36 product per page
-		List<Product> products = productDao.getProductByPage(numPage, 36);
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			ProductDao productDao = new ProductDao(connection);
+			int maxPage = productDao.countProduct() / 36;// 36 product per page
+			List<Product> products = productDao.getProductByPage(numPage, 36);
 
-		request.setAttribute("numPage", numPage);
-		request.setAttribute("maxNumPage", maxPage);
-		request.setAttribute("listProduct", products);
-		// foward request to jsp file
-		request.getRequestDispatcher("admin/admin_product.jsp").forward(request, response);
+			request.setAttribute("numPage", numPage);
+			request.setAttribute("maxNumPage", maxPage);
+			request.setAttribute("listProduct", products);
+			// foward request to jsp file
+			request.getRequestDispatcher("admin/admin_product.jsp").forward(request, response);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -63,19 +69,24 @@ public class ProductManagement extends HttpServlet {
 			throws ServletException, IOException {
 		String command = request.getParameter("command");
 		String productIdString = request.getParameter("productId");
-		ProductDao productDao = new ProductDao(DataSourceProvider.getDataSource());
-		switch (command) {
-		case "delete":
-			if (Validate.checkInt(productIdString)) {
-				int productId = Integer.parseInt(productIdString);
-				productDao.deleteProduct(productId);
-			}
-			break;
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			ProductDao productDao = new ProductDao(connection);
+			switch (command) {
+			case "delete":
+				if (Validate.checkInt(productIdString)) {
+					int productId = Integer.parseInt(productIdString);
+					productDao.deleteProduct(productId);
+				}
+				break;
 
-		default:
-			break;
+			default:
+				break;
+			}
+			response.sendRedirect("ProductManagement");
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		response.sendRedirect("ProductManagement");
+
 	}
 
 }

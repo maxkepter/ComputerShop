@@ -161,17 +161,16 @@ List<Product> productList = (List<Product>) request.getAttribute("productList");
  }
  %>
 						</a>
+
+						<%if(product.getProductQuantity()>0){ %>
 						<form action="AddToCart" method="post" style="display: inline;">
 							<input type="hidden" name="productId"
 								value="<%=product.getProductID()%>" />
 							<button type="submit" class="requires-login">Add to Cart</button>
 						</form>
-						<form action="BuyProduct" method="post" style="display: inline;">
-							<input type="hidden" name="productId"
-								value="<%=product.getProductID()%>" />
-							<button type="submit" class="requires-login">Buy Now</button>
-						</form>
-
+						<%}else{ %>
+						<strong style="color: red;">Product sold off</strong>
+						<%} %>
 					</div>
 					<%
 					}

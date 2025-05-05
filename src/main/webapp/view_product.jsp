@@ -24,12 +24,12 @@ List<Rating> ratingList = (List<Rating>) request.getAttribute("ratingList");
 List<SpecProduct> specificationList = product.getSpecProducts();
 Boolean isLogged = (Boolean) session.getAttribute("isLogged");
 User user = (User) session.getAttribute("user");
-OrderDao orderDao = new OrderDao(DataSourceProvider.getDataSource());
+
 Rating userRating = null;
 boolean hasUserPurchased = false;
 if (isLogged != null && isLogged && user != null) {
 	userRating = RatingDao.getRatingByUserId(ratingList, user.getUserID());
-	hasUserPurchased = orderDao.hasUserPurchasedProduct(user.getUserID(), product.getProductID());
+	hasUserPurchased = (boolean) request.getAttribute("hasUserPurchased");
 }
 %>
 <title><%=product.getProductName()%></title>
@@ -37,7 +37,6 @@ if (isLogged != null && isLogged && user != null) {
 <link rel="stylesheet" href="./css/footer.css">
 	<link rel="stylesheet" href="./css/viewProduct.css">
 		<style>
-
 }
 </style>
 		<script>

@@ -1,6 +1,7 @@
 package controller.login;
 
 import java.io.IOException;
+import java.sql.Connection;
 
 import Model.User;
 import dao.UserDao;
@@ -39,19 +40,23 @@ public class AdminLoginServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String userName = request.getParameter("userName");
 		String password = request.getParameter("password");
-		UserDao userDao = new UserDao(DataSourceProvider.getDataSource());
-		int status = userDao.checkLoginUser(userName, password);
-		if (status == 0) {
-			User admin = userDao.getUser(userName);
-			HttpSession session = request.getSession();
-			session.setAttribute("isLogged", true);// user is logged
-			session.setAttribute("admin", admin);
-			response.sendRedirect("AdminHome");
-		} else {
-			// fail to login
-			ResponseUtils.evict(response);
-		}
-	}
+		try(Connection connection=DataSourceProvider.getDataSource().getConnection()) {
+			UserDao userDao = new UserDao(connection);
+			int status = userDao.checkLoginUser(userName, password);
+			if (status == 0) {
+				User admin = userDao.getUser(userName);
+				HttpSession session = request.getSession();
+				session.setAttribute("isLogged", true);// user is logged
+				session.setAttribute("admin", admin);
+				response.sendRedirect("AdminHome");
+			} else {
+				// fail to login
+				ResponseUtils.evict(response);
+			}} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}	
+		
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

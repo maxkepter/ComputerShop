@@ -6,40 +6,33 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.DataSource;
 
 public class CartDao {
-	DataSource dataSource;
+	private Connection connection;
 
-	public CartDao(DataSource dataSource) {
-		this.dataSource = dataSource;
+	public CartDao(Connection connection) {
+		this.connection = connection;
 	}
 
 	// get all products in the cart for a user by userId
 	public List<Product> getCartByUserId(int userId) {
-		String sql = "select c.ProductID, p.ProductName,p.ProductQuantity,p.Price from CartItem as c join Product as p on c.ProductID=p.ProductID where c.UserId=?";
+		String sql = "SELECT c.ProductID, p.ProductName, p.ProductQuantity, p.Price " +
+				"FROM CartItem AS c " +
+				"JOIN Product AS p ON c.ProductID = p.ProductID " +
+				"WHERE c.UserId = ?";
 		List<Product> cartItems = new ArrayList<>();
-		try (Connection connection = dataSource.getConnection()) {
-			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-				statement.setInt(1, userId);
-				statement.executeQuery();
-				try (ResultSet resultSet = statement.getResultSet()) {
-					while (resultSet.next()) {
-						int productId = resultSet.getInt("ProductID");
-						String productName = resultSet.getString("ProductName");
-						int productQuantity = resultSet.getInt("ProductQuantity");
-						double price = resultSet.getDouble("Price");
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, userId);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					int productId = resultSet.getInt("ProductID");
+					String productName = resultSet.getString("ProductName");
+					int productQuantity = resultSet.getInt("ProductQuantity");
+					double price = resultSet.getDouble("Price");
 
-						Product product = new Product(productId, productName, productQuantity, price);
-						cartItems.add(product);
-					}
-
-				} catch (Exception e) {
-					e.printStackTrace();
+					Product product = new Product(productId, productName, productQuantity, price);
+					cartItems.add(product);
 				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -48,21 +41,29 @@ public class CartDao {
 	}
 
 	// add a product to the cart if it does not already exist
-	// if it exists, do nothing
 	public void addToCart(int userId, int productId) {
-		String sql = "IF NOT EXISTS (SELECT 1 FROM CartItem WHERE UserID = ? AND ProductID = ?) "
-				+ "BEGIN INSERT INTO CartItem (UserID, ProductID) VALUES (?, ?) END";
-		try (Connection connection = dataSource.getConnection()) {
-			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-				statement.setInt(1, userId);
-				statement.setInt(2, productId);
-				statement.executeUpdate();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		String sql = "IF NOT EXISTS (SELECT 1 FROM CartItem WHERE UserID = ? AND ProductID = ?) " +
+				"BEGIN INSERT INTO CartItem (UserID, ProductID) VALUES (?, ?) END";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, userId);
+			statement.setInt(2, productId);
+			statement.setInt(3, userId);
+			statement.setInt(4, productId);
+			statement.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	// remove a product from the cart
+	public void removeFromCart(int userId, int productId) {
+		String sql = "DELETE FROM CartItem WHERE UserID = ? AND ProductID = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, userId);
+			statement.setInt(2, productId);
+			statement.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

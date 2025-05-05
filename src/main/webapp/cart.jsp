@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<%@page import="dao.CartDao"%>
+<%@page import="controller.user.Cart"%>
+<%@page import="java.util.List"%>
 <%@page import="utils.ResponseUtils"%>
 <%@page import="Model.User"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -13,6 +16,7 @@
 <%
 Boolean isLogged = (Boolean) session.getAttribute("isLogged");
 User user = (User) session.getAttribute("user");
+
 %>
 <link rel="stylesheet" href="./css/navbar.css">
 <link rel="stylesheet" href="./css/footer.css">
@@ -60,7 +64,7 @@ User user = (User) session.getAttribute("user");
 		</div>
 		
 		<div class="main-content">
-
+			
 
 			
 		</div>

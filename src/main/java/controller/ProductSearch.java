@@ -9,6 +9,8 @@ import utils.DataSourceProvider;
 import utils.Validate;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -36,40 +38,45 @@ public class ProductSearch extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String typeIdString=request.getParameter("productType");
-		String brandIdString=request.getParameter("productBrand");
-		String sortBy=request.getParameter("sort");
-		
-		String numPageString=request.getParameter("numPage");		
-		int numPage=0;
-		if(Validate.checkInt(numPageString)) {
-			numPage=Integer.parseInt(numPageString);		}
-		
-		if(Validate.checkInt(typeIdString)&&Validate.checkInt(brandIdString)) {
-			
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String typeIdString = request.getParameter("productType");
+		String brandIdString = request.getParameter("productBrand");
+		String sortBy = request.getParameter("sort");
+
+		String numPageString = request.getParameter("numPage");
+		int numPage = 0;
+		if (Validate.checkInt(numPageString)) {
+			numPage = Integer.parseInt(numPageString);
 		}
-		
-		ProductDao productDao=new ProductDao(DataSourceProvider.getDataSource());
-		List<Product> productList=productDao.getProductByPage(numPage, 40);
 
+		if (Validate.checkInt(typeIdString) && Validate.checkInt(brandIdString)) {
 
-		TypeDao typeDao=new TypeDao(DataSourceProvider.getDataSource());
-		List<Type> typeList=typeDao.getType();
-				
-		BrandDao brandDao=new BrandDao(DataSourceProvider.getDataSource());
-		List<Brand> brandList=brandDao.getBrand(); 
-		
-		request.setAttribute("productList", productList);
-		request.setAttribute("typeList", typeList);
-		request.setAttribute("brandList", brandList);
-		
-		request.getRequestDispatcher("product_search.jsp").forward(request, response);
-		
-		
+		}
+
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			ProductDao productDao = new ProductDao(connection);
+			List<Product> productList = productDao.getProductByPage(numPage, 40);
+
+			TypeDao typeDao = new TypeDao(connection);
+			List<Type> typeList = typeDao.getType();
+
+			BrandDao brandDao = new BrandDao(connection);
+			List<Brand> brandList = brandDao.getBrand();
+
+			request.setAttribute("productList", productList);
+			request.setAttribute("typeList", typeList);
+			request.setAttribute("brandList", brandList);
+
+			request.getRequestDispatcher("product_search.jsp").forward(request, response);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**

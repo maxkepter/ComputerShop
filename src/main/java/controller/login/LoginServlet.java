@@ -1,12 +1,10 @@
 package controller.login;
 
 import java.io.IOException;
-
-import javax.sql.DataSource;
+import java.sql.Connection;
 
 import Model.User;
 import dao.UserDao;
-import jakarta.annotation.Resource;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,6 +12,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import utils.DataSourceProvider;
 
 /**
  * Servlet implementation class LoginServlet
@@ -21,8 +20,6 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/Login")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	@Resource(name = "jdbc/computer-shop")
-	private DataSource dataSource;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -47,35 +44,40 @@ public class LoginServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String userName = request.getParameter("userName");
 		String password = request.getParameter("password");
-		UserDao userDao = new UserDao(dataSource);
-		RequestDispatcher dispatcher = null;
-		int status = userDao.checkLoginUser(userName, password);
-		switch (status) {
-		case 0:// login success
-			User user = userDao.getUser(userName);
-			HttpSession session = request.getSession();
-			session.setAttribute("isLogged", true);// user is logged
-			session.setAttribute("user", user);
-			session.setMaxInactiveInterval(60*60);//second
-			response.sendRedirect("Home");
-			break;
-		case 1:// wrong password66
-			request.setAttribute("loginStatus", 1);
-			request.setAttribute("userName", userName);
-			dispatcher = request.getRequestDispatcher("login.jsp");
-			dispatcher.forward(request, response);
-			break;
-		case 2:// userName not found
-			request.setAttribute("loginStatus", 2);
-			request.setAttribute("userName", userName);
-			dispatcher = request.getRequestDispatcher("login.jsp");
-			dispatcher.forward(request, response);
-			break;
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			UserDao userDao = new UserDao(connection);
+			RequestDispatcher dispatcher = null;
+			int status = userDao.checkLoginUser(userName, password);
+			switch (status) {
+			case 0:// login success
+				User user = userDao.getUser(userName);
+				HttpSession session = request.getSession();
+				session.setAttribute("isLogged", true);// user is logged
+				session.setAttribute("user", user);
+				session.setMaxInactiveInterval(60 * 60);// second
+				response.sendRedirect("Home");
+				break;
+			case 1:// wrong password66
+				request.setAttribute("loginStatus", 1);
+				request.setAttribute("userName", userName);
+				dispatcher = request.getRequestDispatcher("login.jsp");
+				dispatcher.forward(request, response);
+				break;
+			case 2:// userName not found
+				request.setAttribute("loginStatus", 2);
+				request.setAttribute("userName", userName);
+				dispatcher = request.getRequestDispatcher("login.jsp");
+				dispatcher.forward(request, response);
+				break;
 
-		default:
+			default:
 
-			break;
+				break;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
+
 	}
 
 }

@@ -1,6 +1,6 @@
 <Context>
 	<Resource name="jdbc/computer-shop" auth="Container"
-		type="javax.sql.DataSource" maxActive="20" maxIdle="5" maxWait="10000"
+		type="javax.sql.DataSource" maxActive="100" maxIdle="50" maxWait="10000"
 		driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 		url="jdbc:sqlserver://kepter.database.windows.net:1433;database=ComputerShop;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
 		username="kepteradmin@kepter" password="@Keptersql123" />
