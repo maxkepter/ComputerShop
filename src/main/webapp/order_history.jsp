@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<%@page import="utils.ResponseUtils"%>
+<%@page import="Model.OrderDetail"%>
+<%@page import="Model.Order"%>
+<%@page import="java.util.List"%>
 <%@page import="Model.User"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -9,23 +12,18 @@
 	xmlns:h="http://java.sun.com/jsf/html">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>User Profile</title>
+<title>Order History</title>
 <%
 Boolean isLogged = (Boolean) session.getAttribute("isLogged");
 User user = (User) session.getAttribute("user");
+List<Order> orderlist = (List<Order>) request.getAttribute("orderList");
 %>
 <link rel="stylesheet" href="./css/navbar.css">
-	<link rel="stylesheet" href="./css/user_profile.css">
-		<link rel="stylesheet" href="./css/footer.css">
+<link rel="stylesheet" href="./css/order_history.css">
+	<link rel="stylesheet" href="./css/footer.css">
 </head>
 <body>
 	<f:view>
-		<%
-		if (isLogged == null || !isLogged) {
-			ResponseUtils.evict(response);
-		} else {
-		%>
-
 		<div class="header">
 			<a href="Home"><img id="home-logo"
 				src="https://www.svgrepo.com/show/22031/home-icon-silhouette.svg"
@@ -66,57 +64,62 @@ User user = (User) session.getAttribute("user");
 					href="Logout">Logout</a>
 			</div>
 			<div class="content">
-				<div class="view-profile">
-					<h1>User Profile</h1>
-					<p>
-						<strong>Username:</strong>
-						<%=user.getUserName()%></p>
-					<p>
-						<strong>First name:</strong>
-						<%=user.getFirstName()%>
-					</p>
-					<p>
-						<strong>Last name:</strong><%=user.getLastName()%>
-					</p>
-					<p>
-						<strong>Email:</strong>
-						<%=user.getEmail()%></p>
-					<p>
-						<strong>Phone:</strong>
-						<%=user.getPhoneNumber()%></p>
-					<p>
-						<strong>Address:</strong>
-						<%=user.getAddress()%></p>
-				</div>
+				<div class="order-list">
 
-				<div class="update-profile">
-					<h1>Update Profile</h1>
-					<form action="UserProfile" method="post">
-						<div class="form-group">
-							<label for="firstName">First Name:</label> <input type="text"
-								id="firstName" name="firstName" value="<%=user.getFirstName()%>" />
-						</div>
-						<div class="form-group">
-							<label for="lastName">Last Name:</label> <input type="text"
-								id="lastName" name="lastName" value="<%=user.getLastName()%>" />
-						</div>
-						<div class="form-group">
-							<label for="email">Email:</label> <input type="text" id="email"
-								name="email" value="<%=user.getEmail()%>" />
-						</div>
-						<div class="form-group">
-							<label for="phone">Phone:</label> <input type="text" id="phone"
-								name="phone" value="<%=user.getPhoneNumber()%>"
-								pattern="^\d{10}$" title="Phone numbet must have 10 digits" />
 
+					<h2>Order History</h2>
+					<%
+					if (orderlist != null && !orderlist.isEmpty()) {
+						for (Order order : orderlist) {
+							List<OrderDetail> orderDetails = order.getOrderDetails();
+					%>
+
+					<div class="order-item">
+						<p>
+							Order ID:
+							<%=order.getOrderID()%></p>
+						<p>
+							Order Date:
+							<%=order.getOrderDate()%></p>
+						<p>
+							Total Amount:
+							<%=order.getTotalAmount()%></p>
+						<details> <summary>
+							<p>Order Details</p>	
+						</summary>
+						<div class="orderDetail-list">
+							<%
+							for (OrderDetail orderDetail : orderDetails) {
+							%>
+							<div class="orderDetail-item">
+								<c:url var="viewLink" value="ViewProduct">
+									<c:param name="productId"
+										value="<%=String.valueOf(orderDetail.getProductID())%>" />
+								</c:url>
+								<a href="${viewLink}">
+									Product Name:
+									<%=orderDetail.getProductName()%></a>
+								
+								<p>
+									Quantity:
+									<%=orderDetail.getOrderQuantity()%></p>
+								<p>
+									Price:
+									<%=(int)orderDetail.getAmount()%> đ</p>
+							</div>
+							<%
+							}
+							%>				
 						</div>
-						<div class="form-group">
-							<label for="address">Address:</label> <input type="text"
-								id="address" name="address" value="<%=user.getAddress()%>" />
-						</div>
-						<input type="hidden" name="command" value="update" />
-						<button type="submit">Update</button>
-					</form>
+						
+						 </details>
+
+					</div>
+
+					<%
+					}
+					}
+					%>
 				</div>
 			</div>
 		</div>
@@ -128,9 +131,6 @@ User user = (User) session.getAttribute("user");
 				<p>Contact:
 			</div>
 		</div>
-		<%
-		}
-		%>
 	</f:view>
 </body>
 </html>

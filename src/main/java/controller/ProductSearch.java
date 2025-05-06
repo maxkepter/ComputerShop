@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.DataSourceProvider;
+import utils.SessionUtils;
 import utils.Validate;
 
 import java.io.IOException;
@@ -13,12 +14,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import Model.Brand;
 import Model.Product;
 import Model.Type;
+import Model.User;
 import dao.BrandDao;
+import dao.CartDao;
 import dao.ProductDao;
 import dao.TypeDao;
 
@@ -46,21 +47,31 @@ public class ProductSearch extends HttpServlet {
 
 		String typeIdString = request.getParameter("productType");
 		String brandIdString = request.getParameter("productBrand");
+		String search=request.getParameter("search");
 		String sortBy = request.getParameter("sort");
 
 		String numPageString = request.getParameter("numPage");
+		int typeId=0;
+		int brandId=0;
 		int numPage = 0;
 		if (Validate.checkInt(numPageString)) {
 			numPage = Integer.parseInt(numPageString);
 		}
 
-		if (Validate.checkInt(typeIdString) && Validate.checkInt(brandIdString)) {
-
+		if(search==null) {
+			search="";
+		}
+		if(Validate.checkInt(typeIdString)) {
+			typeId=Integer.parseInt(typeIdString);
+		}
+		
+		if(Validate.checkInt(brandIdString)) {
+			brandId=Integer.parseInt(brandIdString);
 		}
 
 		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
 			ProductDao productDao = new ProductDao(connection);
-			List<Product> productList = productDao.getProductByPage(numPage, 40);
+			List<Product> productList = productDao.searchProduct(numPageString, brandId, typeId, numPage, 40);
 
 			TypeDao typeDao = new TypeDao(connection);
 			List<Type> typeList = typeDao.getType();
@@ -85,6 +96,26 @@ public class ProductSearch extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String command = request.getParameter("command");
+		User user = SessionUtils.getUser(request.getSession());
+		String productId = request.getParameter("productId");
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			CartDao cartDao = new CartDao(connection);
+			switch (command) {
+			case "addToCart":
+				if (user != null && Validate.checkInt(productId)) {
+					cartDao.addToCart(user.getUserID(), Integer.parseInt(productId));
+
+				}
+				break;
+
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		response.sendRedirect("ProductSearch");
 
 	}
 

@@ -2,11 +2,14 @@ package View;
 
 import java.io.IOException;
 
+import Model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import utils.ResponseUtils;
+import utils.SessionUtils;
 
 /**
  * Servlet implementation class AdminHome
@@ -30,7 +33,12 @@ public class AdminHome extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		request.getRequestDispatcher("/admin/admin_home.jsp").forward(request, response);
+		User user = SessionUtils.getUser(request.getSession());
+		if (user == null || user.getUserRole() != 1) {
+			ResponseUtils.evict(response);
+		} else {
+			request.getRequestDispatcher("/admin/admin_home.jsp").forward(request, response);
+		}
 
 	}
 

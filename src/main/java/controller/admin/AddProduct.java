@@ -10,6 +10,7 @@ import Model.Product;
 import Model.SpecProduct;
 import Model.Specification;
 import Model.Type;
+import Model.User;
 import dao.BrandDao;
 import dao.ProductDao;
 import dao.SpecificationDao;
@@ -20,6 +21,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.DataSourceProvider;
+import utils.ResponseUtils;
+import utils.SessionUtils;
 import utils.StringFilter;
 import utils.Validate;
 
@@ -45,22 +48,27 @@ public class AddProduct extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
-			BrandDao brandDao = new BrandDao(connection);
-			TypeDao typeDao = new TypeDao(connection);
-			SpecificationDao specificationDao = new SpecificationDao(connection);
+		User user = SessionUtils.getUser(request.getSession());
+		if (user == null || user.getUserRole() != 1) {
+			ResponseUtils.evict(response);
+		} else {
+			try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+				BrandDao brandDao = new BrandDao(connection);
+				TypeDao typeDao = new TypeDao(connection);
+				SpecificationDao specificationDao = new SpecificationDao(connection);
 
-			// send list of prarameter to form
-			List<Brand> brandList = brandDao.getBrand();
-			List<Type> typeList = typeDao.getType();
-			List<Specification> specificationList = specificationDao.getSpecification();
+				// send list of prarameter to form
+				List<Brand> brandList = brandDao.getBrand();
+				List<Type> typeList = typeDao.getType();
+				List<Specification> specificationList = specificationDao.getSpecification();
 
-			request.setAttribute("brandList", brandList);
-			request.setAttribute("typeList", typeList);
-			request.setAttribute("specificationList", specificationList);
-			request.getRequestDispatcher("admin/add_product.jsp").forward(request, response);
-		} catch (SQLException e) {
-			e.printStackTrace();
+				request.setAttribute("brandList", brandList);
+				request.setAttribute("typeList", typeList);
+				request.setAttribute("specificationList", specificationList);
+				request.getRequestDispatcher("admin/add_product.jsp").forward(request, response);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

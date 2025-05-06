@@ -151,10 +151,11 @@ public class ViewProduct extends HttpServlet {
 			}
 
 			break;
-		case "cart":
+		case "addToCart":
 			try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
 				CartDao cartDao = new CartDao(connection);
 				cartDao.addToCart(userId, productId);
+				System.out.println("Test=================");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

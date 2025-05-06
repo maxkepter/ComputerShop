@@ -84,6 +84,7 @@ List<Product> productList = (List<Product>) request.getAttribute("productList");
 						<div class="filter-item">
 							<label for="productType">Type: </label> <select id="productType"
 								name="productType">
+								
 								<%
 								if (typeList != null) {
 									for (Type type : typeList) {
@@ -99,6 +100,7 @@ List<Product> productList = (List<Product>) request.getAttribute("productList");
 						<div class="filter-item">
 							<label for="productBrand">Brand: </label> <select
 								id="productBrand" name="productBrand" required>
+								<option value="0">All</option>
 								<%
 								if (brandList != null) {
 									for (Brand brand : brandList) {
@@ -163,10 +165,12 @@ List<Product> productList = (List<Product>) request.getAttribute("productList");
 						</a>
 
 						<%if(product.getProductQuantity()>0){ %>
-						<form action="AddToCart" method="post" style="display: inline;">
+						<form action="ProductSearch" method="post" style="display: inline;">
+						<input type="hidden" name="command" value="addToCart"/>
 							<input type="hidden" name="productId"
 								value="<%=product.getProductID()%>" />
-							<button type="submit" class="requires-login">Add to Cart</button>
+						
+							<button type="submit" class="requires-login" >Add to Cart</button>
 						</form>
 						<%}else{ %>
 						<strong style="color: red;">Product sold off</strong>

@@ -28,6 +28,9 @@ public class Validate {
 	}
 
 	public static boolean checkInt(String[] strings) {
+		if(strings==null) {
+			return false;
+		}
 		for (String s : strings) {
 			if (!checkInt(s)) {
 				return false;

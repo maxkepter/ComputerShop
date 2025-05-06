@@ -58,4 +58,13 @@ public class Order {
 	public void setOrderDetails(List<OrderDetail> orderDetails) {
 		this.orderDetails = orderDetails;
 	}
+	
+	public int getTotalAmount() {
+		int total=0;if(orderDetails!=null) {
+			for(OrderDetail orderDetail:orderDetails) {
+				total+=orderDetail.getAmount();
+			}
+		}
+		return  total;
+	}
 }

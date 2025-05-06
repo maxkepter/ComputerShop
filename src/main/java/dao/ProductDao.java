@@ -305,4 +305,79 @@ public class ProductDao {
 		}
 		return 0;
 	}
+
+	public List<Product> searchProduct(String keyword, int brandId, int typeId, int numPage, int productPerPage) {
+		List<Product> list = new ArrayList<>();
+		int offset = numPage * productPerPage;
+
+		StringBuilder sql = new StringBuilder("""
+				    SELECT DISTINCT p.ProductID, p.ProductName, p.ProductQuantity, p.Description, p.Price, p.BrandID
+				    FROM Product p
+				""");
+
+		if (typeId != 0) {
+			sql.append(" JOIN ProductType pt ON p.ProductID = pt.ProductID ");
+		}
+
+		sql.append(" WHERE 1=1 ");
+
+		if (keyword != null && !keyword.isEmpty()) {
+			sql.append(" AND (p.ProductName LIKE ? OR p.Description LIKE ?) ");
+		}
+
+		if (brandId != 0) {
+			sql.append(" AND p.BrandID = ? ");
+		}
+
+		if (typeId != 0) {
+			sql.append(" AND pt.TypeID = ? ");
+		}
+
+		sql.append(" ORDER BY p.ProductID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+
+		try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+			int paramIndex = 1;
+
+			if (keyword != null && !keyword.isEmpty()) {
+				String likeKeyword = "%" + keyword + "%";
+				ps.setString(paramIndex++, likeKeyword);
+				ps.setString(paramIndex++, likeKeyword);
+			}
+
+			if (brandId != 0) {
+				ps.setInt(paramIndex++, brandId);
+			}
+
+			if (typeId != 0) {
+				ps.setInt(paramIndex++, typeId);
+			}
+
+			ps.setInt(paramIndex++, offset);
+			ps.setInt(paramIndex, productPerPage);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					int id = rs.getInt("ProductID");
+					String name = rs.getString("ProductName");
+					int qty = rs.getInt("ProductQuantity");
+					String desc = rs.getString("Description");
+					double price = rs.getDouble("Price");
+					int bId = rs.getInt("BrandID");
+
+					List<String> productType = getProductType(id);
+					List<SpecProduct> specs = getSpecProduct(id);
+					List<String> images = getImageProduct(id);
+					double avgRate = getAvgRate(id);
+					int sold = getSold(id);
+
+					list.add(new Product(id, name, qty, desc, price, bId, avgRate, sold, productType, specs, images));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
 }

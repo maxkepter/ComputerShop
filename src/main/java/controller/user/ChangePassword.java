@@ -1,27 +1,32 @@
-package controller.admin;
+package controller.user;
 
-import java.io.IOException;
-
-import Model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import utils.DataSourceProvider;
 import utils.ResponseUtils;
 import utils.SessionUtils;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import Model.User;
+import dao.UserDao;
+
 /**
- * Servlet implementation class StatisticsServlet
+ * Servlet implementation class ChangePassword
  */
-@WebServlet("/StatisticsServlet")
-public class StatisticsServlet extends HttpServlet {
+@WebServlet("/ChangePassword")
+public class ChangePassword extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public StatisticsServlet() {
+	public ChangePassword() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -30,26 +35,39 @@ public class StatisticsServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		User user = SessionUtils.getUser(request.getSession());
-		if (user == null || user.getUserRole() != 1) {
+		if (user != null) {
+			request.getRequestDispatcher("change_password.jsp").forward(request, response);
+		} else {
 			ResponseUtils.evict(response);
 		}
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		String newPassword = request.getParameter("newPassword");
+		User user = SessionUtils.getUser(request.getSession());
+		if (user != null) {
+			try (Connection connection = DataSourceProvider.getDataSource().getConnection();) {
+				UserDao userDao = new UserDao(connection);
+				userDao.updatePassword(user.getUserID(), newPassword);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				response.sendRedirect("UserProfile");
+			}
+		} else {
+			ResponseUtils.evict(response);
+		}
+
 	}
 
 }

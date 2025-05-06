@@ -16,29 +16,39 @@ public class CartDao {
 
 	// get all products in the cart for a user by userId
 	public List<Product> getCartByUserId(int userId) {
-		String sql = "SELECT c.ProductID, p.ProductName, p.ProductQuantity, p.Price " +
-				"FROM CartItem AS c " +
-				"JOIN Product AS p ON c.ProductID = p.ProductID " +
-				"WHERE c.UserId = ?";
-		List<Product> cartItems = new ArrayList<>();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setInt(1, userId);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				while (resultSet.next()) {
-					int productId = resultSet.getInt("ProductID");
-					String productName = resultSet.getString("ProductName");
-					int productQuantity = resultSet.getInt("ProductQuantity");
-					double price = resultSet.getDouble("Price");
+	    String sql = "SELECT c.ProductID, p.ProductName, p.ProductQuantity, p.Price, img.URL " +
+	                 "FROM CartItem AS c " +
+	                 "JOIN Product AS p ON c.ProductID = p.ProductID " +
+	                 "LEFT JOIN (" +
+	                 "   SELECT ProductID, MIN(ImageID) AS FirstImageID " +
+	                 "   FROM Image GROUP BY ProductID" +
+	                 ") AS firstImg ON p.ProductID = firstImg.ProductID " +
+	                 "LEFT JOIN Image AS img ON img.ImageID = firstImg.FirstImageID " +
+	                 "WHERE c.UserId = ?";
+	                 
+	    List<Product> cartItems = new ArrayList<>();
+	    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+	        statement.setInt(1, userId);
+	        try (ResultSet resultSet = statement.executeQuery()) {
+	            while (resultSet.next()) {
+	                int productId = resultSet.getInt("ProductID");
+	                String productName = resultSet.getString("ProductName");
+	                int productQuantity = resultSet.getInt("ProductQuantity");
+	                double price = resultSet.getDouble("Price");
+	                String imageUrl = resultSet.getString("URL"); // can be null
+	                List<String> image=new ArrayList<String>();
+	                image.add(imageUrl);
 
-					Product product = new Product(productId, productName, productQuantity, price);
-					cartItems.add(product);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return cartItems;
+	                Product product=new Product(productId, productName, productQuantity, price, image);
+	                cartItems.add(product);
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return cartItems;
 	}
+
 
 	// add a product to the cart if it does not already exist
 	public void addToCart(int userId, int productId) {

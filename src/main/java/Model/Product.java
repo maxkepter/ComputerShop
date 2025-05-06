@@ -1,6 +1,9 @@
 package Model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Product {
 	private int productID;
@@ -48,20 +51,20 @@ public class Product {
 		this.specProducts = specProducts;
 		this.imageProduct = imageProduct;
 	}
+
 	// constructor này dùng để lấy thông tin cho giỏ hàng
-	public Product(int productID, String productName, int productQuantity, double price) {
+	public Product(int productID, String productName, int productQuantity, double price, List<String> imageProduct) {
 		super();
 		this.productID = productID;
 		this.productName = productName;
 		this.productQuantity = productQuantity;
 		this.price = price;
+		this.imageProduct = imageProduct;
 	}
-	
-	
 
 	public int getProductID() {
 		return productID;
-	}	
+	}
 
 	public String getProductName() {
 		return productName;
@@ -145,6 +148,24 @@ public class Product {
 
 	public void setImageProduct(List<String> imageProduct) {
 		this.imageProduct = imageProduct;
+	}
+
+	public static List<Map<Integer, Integer>> getProductQuantityList(List<Integer> productIdList,
+			List<Integer> productQuantityList) {
+		List<Map<Integer, Integer>> productQuantityListResult = new ArrayList<>();
+
+		if (productIdList == null || productQuantityList == null
+				|| productIdList.size() != productQuantityList.size()) {
+			throw new IllegalArgumentException("Id list and quantity list do not have same size");
+		}
+
+		for (int i = 0; i < productIdList.size(); i++) {
+			Map<Integer, Integer> map = new HashMap<>();
+			map.put(productIdList.get(i), productQuantityList.get(i));
+			productQuantityListResult.add(map);
+		}
+
+		return productQuantityListResult;
 	}
 
 }

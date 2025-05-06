@@ -1,0 +1,70 @@
+@charset "UTF-8";
+
+.main-content {
+  display: flex;
+  align-items: flex-start;
+  margin: 20px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: hwb(225 75% 19%);
+  border-radius: 5px;
+  margin: 10px;
+  margin-top: 0px;
+  width: 15%;
+}
+.sidebar a {
+  text-decoration: none; /* Xóa gạch chân */
+  color: inherit; /* Giữ màu chữ gốc */
+  display: block; /* Cho toàn bộ thẻ a bao hết nội dung */
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+.sidebar a:hover {
+  background-color: #007bff; /* Đổi màu nền khi hover */
+  color: white; /* Đổi màu chữ khi hover */
+}
+.sidebar a.active {
+  background-color: #007bff; /* Màu nền cho liên kết đang hoạt động */
+  color: white; /* Màu chữ cho liên kết đang hoạt động */
+}
+
+.content {
+  flex: 1; /* Chiếm phần còn lại của không gian */
+  padding: 20px;
+  background-color: hwb(225 75% 19%);
+  border-radius: 5px;
+  margin: 10px;
+  margin-top: 0px;
+}
+
+.content h2 {
+  margin-top: 0;
+  color: #333; /* Màu chữ cho tiêu đề */
+  text-align: center; /* Căn giữa tiêu đề */
+}
+.content .order-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc; /* Đường viền dưới mỗi mục */
+  background-color: #7b92d8;
+  border-radius: 5px;
+}
+
+.content .orderDetail-item {
+  padding: 10px;
+  border-bottom: 1px solid #ccc; /* Đường viền dưới mỗi mục */
+  background-color: #202841;
+  border-radius: 5px;
+  color: white;
+}
+
+.content .orderDetail-item a {
+  margin: 10px 0px;
+}

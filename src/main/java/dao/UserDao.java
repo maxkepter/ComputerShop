@@ -20,8 +20,7 @@ public class UserDao {
 		String sql = "SELECT * FROM [dbo].[User]";
 		List<User> list = new ArrayList<>();
 
-		try (Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(sql)) {
+		try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
 
 			while (resultSet.next()) {
 				int userID = resultSet.getInt("UserID");
@@ -96,8 +95,7 @@ public class UserDao {
 
 	public void createUser(User user, String password) {
 		String sql = "INSERT INTO [User] (UserRole, UserName, Email, PhoneNumber, Address, Password, FirstName, LastName) "
-				+
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 			preparedStatement.setInt(1, user.getUserRole());
@@ -133,7 +131,31 @@ public class UserDao {
 		return isDuplicate;
 	}
 
-	public void updateUser() {
-		// chưa triển khai
+	public void updateUser(int userId, String firstName, String lastName, String email, String phoneNumber,
+			String address) {
+		String sql = "UPDATE [User] SET FirstName = ?, LastName = ?, Email = ?, PhoneNumber = ?, Address = ? WHERE UserID = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setString(1, firstName);
+			statement.setString(2, lastName);
+			statement.setString(3, email);
+			statement.setString(4, phoneNumber);
+			statement.setString(5, address);
+			statement.setInt(6, userId);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
+
+	public void updatePassword(int userId, String password) {
+		String sql = "UPDATE [User] SET Password = ? WHERE UserID = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setString(1, password);
+			statement.setInt(2, userId);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

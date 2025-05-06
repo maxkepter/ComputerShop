@@ -109,41 +109,48 @@ public class OrderDao {
 		}
 	}
 
-	public List<Order> getOrder(int userId, int numPage, int orderPerPage) {
-		Map<Integer, Order> orderMap = new LinkedHashMap<>();
-		String sql = "SELECT o.OrderID, o.OrderDate, o.Status, o.UserID, " +
-				"od.ProductID, od.OrderQuantity, (od.OrderQuantity * p.Price) AS Amount " +
-				"FROM [Order] o " +
-				"JOIN OrderDetail od ON o.OrderID = od.OrderID " +
-				"JOIN Product p ON od.ProductID = p.ProductID " +
-				"WHERE o.UserID = ? " +
-				"ORDER BY o.OrderDate DESC, o.OrderID";
+	public List<Order> getOrder(int userId) {
+	    Map<Integer, Order> orderMap = new LinkedHashMap<>();
+	    String sql = """
+	        SELECT o.OrderID, o.OrderDate, o.Status, o.UserID,
+	               od.ProductID, od.OrderQuantity,
+	               (od.OrderQuantity * p.Price) AS Amount,
+	               p.ProductName
+	        FROM [Order] o
+	        JOIN OrderDetail od ON o.OrderID = od.OrderID
+	        JOIN Product p ON od.ProductID = p.ProductID
+	        WHERE o.UserID = ?
+	        ORDER BY o.OrderDate DESC, o.OrderID
+	    """;
 
-		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-			preparedStatement.setInt(1, userId);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					int orderId = resultSet.getInt("OrderID");
-					Order order = orderMap.get(orderId);
-					if (order == null) {
-						Date orderDate = resultSet.getDate("OrderDate");
-						int status = resultSet.getInt("Status");
-						order = new Order(orderId, orderDate, status, userId, new ArrayList<>());
-						orderMap.put(orderId, order);
-					}
+	    try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+	        preparedStatement.setInt(1, userId);
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            while (resultSet.next()) {
+	                int orderId = resultSet.getInt("OrderID");
+	                Order order = orderMap.get(orderId);
+	                if (order == null) {
+	                    Date orderDate = resultSet.getDate("OrderDate");
+	                    int status = resultSet.getInt("Status");
+	                    order = new Order(orderId, orderDate, status, userId, new ArrayList<>());
+	                    orderMap.put(orderId, order);
+	                }
 
-					int productId = resultSet.getInt("ProductID");
-					int quantity = resultSet.getInt("OrderQuantity");
-					double amount = resultSet.getDouble("Amount");
+	                int productId = resultSet.getInt("ProductID");
+	                int quantity = resultSet.getInt("OrderQuantity");
+	                double amount = resultSet.getDouble("Amount");
+	                String productName = resultSet.getString("ProductName");
 
-					order.getOrderDetails().add(new OrderDetail(productId, quantity, amount));
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return new ArrayList<>(orderMap.values());
+	                order.getOrderDetails().add(new OrderDetail(productId, productName, quantity, amount));
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return new ArrayList<>(orderMap.values());
 	}
+
 
 	public boolean hasUserPurchasedProduct(int userId, int productId) {
 		String sql = "SELECT COUNT(*) AS count " +
