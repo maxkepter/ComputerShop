@@ -10,7 +10,6 @@ import Model.Product;
 import Model.SpecProduct;
 import Model.Specification;
 import Model.Type;
-import Model.User;
 import dao.BrandDao;
 import dao.ProductDao;
 import dao.SpecificationDao;
@@ -48,27 +47,27 @@ public class AddProduct extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		User user = SessionUtils.getUser(request.getSession());
-		if (user == null || user.getUserRole() != 1) {
+		if (SessionUtils.isAdmin(request.getSession())) {
 			ResponseUtils.evict(response);
-		} else {
-			try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
-				BrandDao brandDao = new BrandDao(connection);
-				TypeDao typeDao = new TypeDao(connection);
-				SpecificationDao specificationDao = new SpecificationDao(connection);
+			return;
+		}
+		try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+			BrandDao brandDao = new BrandDao(connection);
+			TypeDao typeDao = new TypeDao(connection);
+			SpecificationDao specificationDao = new SpecificationDao(connection);
 
-				// send list of prarameter to form
-				List<Brand> brandList = brandDao.getBrand();
-				List<Type> typeList = typeDao.getType();
-				List<Specification> specificationList = specificationDao.getSpecification();
+			// send list of prarameter to form
+			List<Brand> brandList = brandDao.getBrand();
+			List<Type> typeList = typeDao.getType();
+			List<Specification> specificationList = specificationDao.getSpecification();
 
-				request.setAttribute("brandList", brandList);
-				request.setAttribute("typeList", typeList);
-				request.setAttribute("specificationList", specificationList);
-				request.getRequestDispatcher("admin/add_product.jsp").forward(request, response);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			request.setAttribute("brandList", brandList);
+			request.setAttribute("typeList", typeList);
+			request.setAttribute("specificationList", specificationList);
+			request.getRequestDispatcher("admin/add_product.jsp").forward(request, response);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not load brand list.");
 		}
 
 	}
@@ -103,12 +102,16 @@ public class AddProduct extends HttpServlet {
 				List<SpecProduct> specProductList = StringFilter.toListSpecProduct(productSpecificationId, specProduct,
 						specValue);
 				List<String> imageList = StringFilter.toListString(productImage);
-				Product newProduct = new Product(productName, Integer.parseInt(productQuantity), productDescription,
-						Double.parseDouble(productPrice), Integer.parseInt(productBrand), specProductList, imageList);
+				Product newProduct = new Product(productName.trim(), Integer.parseInt(productQuantity),
+						productDescription.trim(), Double.parseDouble(productPrice), Integer.parseInt(productBrand),
+						specProductList, imageList);
 				productDao.createProduct(newProduct, typeList);
 				response.sendRedirect("ProductManagement");
 			} else {
-				response.sendRedirect("AddProduct");
+				
+				request.setAttribute("error", "Invalid data!");
+				request.getRequestDispatcher("admin/add_product.jsp").forward(request, response);
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -19,6 +19,9 @@ if (maxNumPage == null) {
 %>
 </head>
 <body>
+	<c:if test="${not empty error}">
+		<div class="alert alert-danger">${error}</div>
+	</c:if>
 
 	<h1>Brand Management</h1>
 	<h2>Add brand</h2>
@@ -80,12 +83,12 @@ if (maxNumPage == null) {
 			<button type="submit" name="numPage" value="${numPage + 1}">Next</button>
 		</c:if>
 	</form>
-	
+
 	<form action="BrandManagement" method="get"
 		onsubmit="return adjustPageNumber()">
 		<label for="numPage">Page:</label> <input type="number" id="numPage"
-			name="numPage" value="<%=numPage + 1%>" min="1" max="<%=maxNumPage+1%>"
-			required />
+			name="numPage" value="<%=numPage + 1%>" min="1"
+			max="<%=maxNumPage + 1%>" required />
 		<button type="submit">Go</button>
 	</form>
 

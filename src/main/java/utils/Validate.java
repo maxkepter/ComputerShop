@@ -47,4 +47,8 @@ public class Validate {
 		}
 		return true;
 	}
+	
+	public static boolean checkString(String input) {
+		return input != null && !input.trim().isEmpty();
+	}
 }

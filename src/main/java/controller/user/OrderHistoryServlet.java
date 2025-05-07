@@ -22,13 +22,13 @@ import dao.OrderDao;
  * Servlet implementation class OrderHistory
  */
 @WebServlet("/OrderHistory")
-public class OrderHistory extends HttpServlet {
+public class OrderHistoryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public OrderHistory() {
+	public OrderHistoryServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -41,29 +41,15 @@ public class OrderHistory extends HttpServlet {
 			throws ServletException, IOException {
 		User user = (User) SessionUtils.getUser(request.getSession());
 		if (user != null) {
-			try (Connection connection=DataSourceProvider.getDataSource().getConnection()){
-				OrderDao orderDao=new OrderDao(connection);
-				List<Order> orderList=orderDao.getOrder(user.getUserID());
+			try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+				OrderDao orderDao = new OrderDao(connection);
+				List<Order> orderList = orderDao.getOrder(user.getUserID());
 				request.setAttribute("orderList", orderList);
+				request.getRequestDispatcher("order_history.jsp").forward(request, response);
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}finally {
-				request.getRequestDispatcher("order_history.jsp").forward(request, response);
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "System error !");
 			}
-		} else {
-			ResponseUtils.evict(response);
-		}
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		User user = (User) SessionUtils.getUser(request.getSession());
-		if (user != null) {
-
 		} else {
 			ResponseUtils.evict(response);
 		}
